@@ -48,26 +48,7 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.LoginResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/auth/logout": {
@@ -83,14 +64,7 @@ const docTemplate = `{
                     "Authentication"
                 ],
                 "summary": "User Logout",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponse"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/auth/register": {
@@ -117,26 +91,7 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/profile": {
@@ -162,18 +117,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -212,72 +155,11 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
                     }
                 }
             }
         },
         "/users": {
-            "get": {
-                "description": "Retrieve a paginated list of users",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get All Users",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Items per page",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UsersListResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Create a new user",
                 "consumes": [
@@ -307,17 +189,39 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request",
+                    }
+                }
+            }
+        },
+        "/users/pagination": {
+            "post": {
+                "description": "Retrieve paginated list of users with optional filters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Users with Pagination",
+                "parameters": [
+                    {
+                        "description": "Pagination and filter parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.UserListRequest"
                         }
-                    },
-                    "409": {
-                        "description": "Conflict",
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.UsersListResponse"
                         }
                     }
                 }
@@ -350,18 +254,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -402,18 +294,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.UserResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
                     }
                 }
             },
@@ -444,37 +324,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.MessageResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
                     }
                 }
             }
         }
     },
     "definitions": {
-        "models.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "validation_error"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Invalid input data"
-                }
-            }
-        },
         "models.LoginRequest": {
             "type": "object",
             "required": [
@@ -489,18 +344,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "password123"
-                }
-            }
-        },
-        "models.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                },
-                "user": {
-                    "$ref": "#/definitions/models.UserResponse"
                 }
             }
         },
@@ -527,6 +370,10 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 100
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },
@@ -552,6 +399,41 @@ const docTemplate = `{
                     "type": "string",
                     "minLength": 6,
                     "example": "password123"
+                }
+            }
+        },
+        "models.UserFilter": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sort_by": {
+                    "type": "string",
+                    "example": "name,email,created_at"
+                },
+                "sort_order": {
+                    "type": "string",
+                    "example": "asc,desc"
+                }
+            }
+        },
+        "models.UserListRequest": {
+            "type": "object",
+            "properties": {
+                "filter": {
+                    "$ref": "#/definitions/models.UserFilter"
+                },
+                "limit": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -598,14 +480,14 @@ const docTemplate = `{
         "models.UsersListResponse": {
             "type": "object",
             "properties": {
-                "pagination": {
-                    "$ref": "#/definitions/models.Pagination"
-                },
-                "users": {
+                "data": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.UserResponse"
                     }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/models.Pagination"
                 }
             }
         }

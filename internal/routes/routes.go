@@ -42,11 +42,11 @@ func SetupRoutes(
 		// User routes (public)
 		users := v1.Group("/users")
 		{
-			users.POST("", userController.CreateUser)       // Create user
-			users.GET("", userController.GetUsers)          // Get all users
-			users.GET("/:id", userController.GetUser)       // Get user by ID
-			users.PUT("/:id", userController.UpdateUser)    // Update user
-			users.DELETE("/:id", userController.DeleteUser) // Delete user
+			users.POST("", userController.CreateUser)                        // Create user
+			users.POST("/pagination", userController.GetUsersWithPagination) // Get users with pagination
+			users.GET("/:id", userController.GetUser)                        // Get user by ID
+			users.PUT("/:id", userController.UpdateUser)                     // Update user
+			users.DELETE("/:id", userController.DeleteUser)                  // Delete user
 		}
 
 		// Protected routes

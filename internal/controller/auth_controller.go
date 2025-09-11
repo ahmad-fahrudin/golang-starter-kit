@@ -31,9 +31,6 @@ func NewAuthController(userService service.UserService) *AuthController {
 // @Accept       json
 // @Produce      json
 // @Param        request body models.LoginRequest true "Login credentials"
-// @Success      200 {object} models.LoginResponse
-// @Failure      400 {object} models.ErrorResponse
-// @Failure      401 {object} models.ErrorResponse
 // @Router       /auth/login [post]
 func (ac *AuthController) Login(c *gin.Context) {
 	var req models.LoginRequest
@@ -76,9 +73,6 @@ func (ac *AuthController) Login(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request body models.UserCreateRequest true "User registration data"
-// @Success      201 {object} models.UserResponse
-// @Failure      400 {object} models.ErrorResponse
-// @Failure      409 {object} models.ErrorResponse
 // @Router       /auth/register [post]
 func (ac *AuthController) Register(c *gin.Context) {
 	var req models.UserCreateRequest
@@ -120,7 +114,6 @@ func (ac *AuthController) Register(c *gin.Context) {
 // @Tags         Authentication
 // @Accept       json
 // @Produce      json
-// @Success      200 {object} models.MessageResponse
 // @Router       /auth/logout [post]
 func (ac *AuthController) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, models.MessageResponse{

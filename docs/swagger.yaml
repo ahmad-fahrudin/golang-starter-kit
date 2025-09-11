@@ -1,14 +1,5 @@
 basePath: /api/v1
 definitions:
-  models.ErrorResponse:
-    properties:
-      error:
-        example: validation_error
-        type: string
-      message:
-        example: Invalid input data
-        type: string
-    type: object
   models.LoginRequest:
     properties:
       email:
@@ -20,14 +11,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  models.LoginResponse:
-    properties:
-      token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        type: string
-      user:
-        $ref: '#/definitions/models.UserResponse'
     type: object
   models.MessageResponse:
     properties:
@@ -45,6 +28,9 @@ definitions:
         type: integer
       total:
         example: 100
+        type: integer
+      total_pages:
+        example: 10
         type: integer
     type: object
   models.UserCreateRequest:
@@ -65,6 +51,30 @@ definitions:
     - email
     - name
     - password
+    type: object
+  models.UserFilter:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      sort_by:
+        example: name,email,created_at
+        type: string
+      sort_order:
+        example: asc,desc
+        type: string
+    type: object
+  models.UserListRequest:
+    properties:
+      filter:
+        $ref: '#/definitions/models.UserFilter'
+      limit:
+        example: 10
+        type: integer
+      page:
+        example: 1
+        type: integer
     type: object
   models.UserResponse:
     properties:
@@ -97,12 +107,12 @@ definitions:
     type: object
   models.UsersListResponse:
     properties:
-      pagination:
-        $ref: '#/definitions/models.Pagination'
-      users:
+      data:
         items:
           $ref: '#/definitions/models.UserResponse'
         type: array
+      pagination:
+        $ref: '#/definitions/models.Pagination'
     type: object
 host: localhost:8080
 info:
@@ -132,19 +142,7 @@ paths:
           $ref: '#/definitions/models.LoginRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.LoginResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
+      responses: {}
       summary: User Login
       tags:
       - Authentication
@@ -155,11 +153,7 @@ paths:
       description: Logout user (client-side token removal)
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.MessageResponse'
+      responses: {}
       summary: User Logout
       tags:
       - Authentication
@@ -177,19 +171,7 @@ paths:
           $ref: '#/definitions/models.UserCreateRequest'
       produces:
       - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
+      responses: {}
       summary: User Registration
       tags:
       - Authentication
@@ -205,14 +187,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Get User Profile
@@ -236,53 +210,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Update User Profile
       tags:
       - Profile
   /users:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a paginated list of users
-      parameters:
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Items per page
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.UsersListResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get All Users
-      tags:
-      - Users
     post:
       consumes:
       - application/json
@@ -301,14 +234,6 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       summary: Create User
       tags:
       - Users
@@ -330,14 +255,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.MessageResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       summary: Delete User
       tags:
       - Users
@@ -358,14 +275,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       summary: Get User by ID
       tags:
       - Users
@@ -392,15 +301,29 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
       summary: Update User
+      tags:
+      - Users
+  /users/pagination:
+    post:
+      consumes:
+      - application/json
+      description: Retrieve paginated list of users with optional filters
+      parameters:
+      - description: Pagination and filter parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersListResponse'
+      summary: Get Users with Pagination
       tags:
       - Users
 securityDefinitions:

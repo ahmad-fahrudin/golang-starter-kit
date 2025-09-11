@@ -41,15 +41,36 @@ type UserResponse struct {
 
 // UsersListResponse represents the response payload for users list with pagination
 type UsersListResponse struct {
-	Users      []UserResponse `json:"users"`
+	Data       []UserResponse `json:"data"`
 	Pagination Pagination     `json:"pagination"`
+}
+
+// UsersData represents the data payload for users list
+type UsersData struct {
+	Users []UserResponse `json:"users"`
 }
 
 // Pagination represents pagination information
 type Pagination struct {
-	Page  int `json:"page" example:"1"`
-	Limit int `json:"limit" example:"10"`
-	Total int `json:"total" example:"100"`
+	Page       int   `json:"page" example:"1"`
+	Limit      int   `json:"limit" example:"10"`
+	Total      int64 `json:"total" example:"100"`
+	TotalPages int   `json:"total_pages" example:"10"`
+}
+
+// UserFilter represents filter options for user listing
+type UserFilter struct {
+	Name      string `form:"name" json:"name"`
+	Email     string `form:"email" json:"email"`
+	SortBy    string `form:"sort_by" json:"sort_by" example:"name,email,created_at"`
+	SortOrder string `form:"sort_order" json:"sort_order" example:"asc,desc"`
+}
+
+// UserListRequest represents the request payload for listing users with filters
+type UserListRequest struct {
+	Page   int        `form:"page" json:"page" example:"1"`
+	Limit  int        `form:"limit" json:"limit" example:"10"`
+	Filter UserFilter `form:"filter" json:"filter"`
 }
 
 // ToResponse converts User model to UserResponse

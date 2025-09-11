@@ -15,7 +15,7 @@ type UserService interface {
 	GetUserByID(id uint) (*models.UserResponse, error)
 	UpdateUser(id uint, req models.UserUpdateRequest) (*models.UserResponse, error)
 	DeleteUser(id uint) error
-	GetAllUsers(page, limit int) ([]models.UserResponse, int64, error)
+	GetAllUsersWithFilter(req models.UserListRequest) (*models.UsersListResponse, error)
 	Login(req models.LoginRequest) (*models.LoginResponse, error)
 }
 
@@ -126,25 +126,22 @@ func (s *userService) DeleteUser(id uint) error {
 	return s.userRepo.Delete(user.ID)
 }
 
-// GetAllUsers gets all users with pagination
-func (s *userService) GetAllUsers(page, limit int) ([]models.UserResponse, int64, error) {
-	if page < 1 {
-		page = 1
+// GetAllUsersWithFilter gets all users with filters and pagination
+func (s *userService) GetAllUsersWithFilter(req models.UserListRequest) (*models.UsersListResponse, error) {
+	// Set default values
+	if req.Page < 1 {
+		req.Page = 1
 	}
-	if limit < 1 {
-		limit = 10
+	if req.Limit < 1 {
+		req.Limit = 10
+	}
+	if req.Limit > 100 {
+		req.Limit = 100 // Max limit to prevent abuse
 	}
 
-	offset := (page - 1) * limit
-
-	users, err := s.userRepo.GetAll(limit, offset)
+	users, total, err := s.userRepo.GetAllWithFilter(req)
 	if err != nil {
-		return nil, 0, err
-	}
-
-	total, err := s.userRepo.GetTotalCount()
-	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	var responses []models.UserResponse
@@ -152,7 +149,23 @@ func (s *userService) GetAllUsers(page, limit int) ([]models.UserResponse, int64
 		responses = append(responses, user.ToResponse())
 	}
 
-	return responses, total, nil
+	// Calculate total pages
+	totalPages := int(total) / req.Limit
+	if int(total)%req.Limit > 0 {
+		totalPages++
+	}
+
+	response := &models.UsersListResponse{
+		Data: responses,
+		Pagination: models.Pagination{
+			Page:       req.Page,
+			Limit:      req.Limit,
+			Total:      total,
+			TotalPages: totalPages,
+		},
+	}
+
+	return response, nil
 }
 
 // Login authenticates a user and returns a JWT token

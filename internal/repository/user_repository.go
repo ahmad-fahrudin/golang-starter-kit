@@ -13,8 +13,7 @@ type UserRepository interface {
 	GetByEmail(email string) (*models.User, error)
 	Update(user *models.User) error
 	Delete(id uint) error
-	GetAll(limit, offset int) ([]models.User, error)
-	GetTotalCount() (int64, error)
+	GetAllWithFilter(req models.UserListRequest) ([]models.User, int64, error)
 }
 
 // userRepository implements UserRepository interface
@@ -62,16 +61,54 @@ func (r *userRepository) Delete(id uint) error {
 	return r.db.Delete(&models.User{}, id).Error
 }
 
-// GetAll gets all users with pagination
-func (r *userRepository) GetAll(limit, offset int) ([]models.User, error) {
+// GetAllWithFilter gets all users with filters and pagination
+func (r *userRepository) GetAllWithFilter(req models.UserListRequest) ([]models.User, int64, error) {
 	var users []models.User
-	err := r.db.Limit(limit).Offset(offset).Find(&users).Error
-	return users, err
-}
+	var total int64
 
-// GetTotalCount gets total count of users
-func (r *userRepository) GetTotalCount() (int64, error) {
-	var count int64
-	err := r.db.Model(&models.User{}).Count(&count).Error
-	return count, err
+	// Build query with filters
+	query := r.db.Model(&models.User{})
+
+	// Apply filters
+	if req.Filter.Name != "" {
+		query = query.Where("name ILIKE ?", "%"+req.Filter.Name+"%")
+	}
+	if req.Filter.Email != "" {
+		query = query.Where("email ILIKE ?", "%"+req.Filter.Email+"%")
+	}
+
+	// Get total count with filters
+	err := query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Apply sorting
+	orderBy := "created_at desc" // default sorting
+	if req.Filter.SortBy != "" {
+		sortOrder := "asc"
+		if req.Filter.SortOrder == "desc" {
+			sortOrder = "desc"
+		}
+
+		// Validate sort fields
+		validSortFields := map[string]bool{
+			"id":         true,
+			"name":       true,
+			"email":      true,
+			"created_at": true,
+			"updated_at": true,
+		}
+
+		if validSortFields[req.Filter.SortBy] {
+			orderBy = req.Filter.SortBy + " " + sortOrder
+		}
+	}
+
+	// Calculate offset
+	offset := (req.Page - 1) * req.Limit
+
+	// Execute query with pagination
+	err = query.Order(orderBy).Limit(req.Limit).Offset(offset).Find(&users).Error
+	return users, total, err
 }

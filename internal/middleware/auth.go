@@ -24,19 +24,28 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
+		var tokenString string
+
 		// Check if the header has the Bearer prefix
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
+		if strings.HasPrefix(authHeader, "Bearer ") {
+			// Format: "Bearer <token>"
+			tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+		} else {
+			// Format: "<token>" (langsung token tanpa Bearer)
+			tokenString = authHeader
+		}
+
+		// Validate that we have a token
+		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, models.ErrorResponse{
 				Error:   "unauthorized",
-				Message: "Invalid authorization header format",
+				Message: "Token is required",
 			})
 			c.Abort()
 			return
 		}
 
 		// Validate the token
-		tokenString := parts[1]
 		claims, err := utils.ValidateToken(tokenString, jwtSecret)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, models.ErrorResponse{
