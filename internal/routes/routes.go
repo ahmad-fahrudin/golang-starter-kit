@@ -3,8 +3,11 @@ package routes
 import (
 	"golang-starter-kit/internal/controller"
 	"golang-starter-kit/internal/middleware"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // SetupRoutes configures all application routes
@@ -22,6 +25,9 @@ func SetupRoutes(
 		})
 	})
 
+	// Swagger endpoint
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// API version 1
 	v1 := router.Group("/api/v1")
 	{
@@ -29,7 +35,7 @@ func SetupRoutes(
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", authController.Register)
-			auth.POST("/login", authController.Login)
+			auth.POST("/login", middleware.RateLimitMiddleware(5, 15*time.Minute), authController.Login)
 			auth.POST("/logout", authController.Logout)
 		}
 

@@ -25,6 +25,16 @@ func NewAuthController(userService service.UserService) *AuthController {
 }
 
 // Login handles POST /auth/login
+// @Summary      User Login
+// @Description  Authenticate user with email and password
+// @Tags         Authentication
+// @Accept       json
+// @Produce      json
+// @Param        request body models.LoginRequest true "Login credentials"
+// @Success      200 {object} models.LoginResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Router       /auth/login [post]
 func (ac *AuthController) Login(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -60,6 +70,16 @@ func (ac *AuthController) Login(c *gin.Context) {
 }
 
 // Register handles POST /auth/register
+// @Summary      User Registration
+// @Description  Register a new user account
+// @Tags         Authentication
+// @Accept       json
+// @Produce      json
+// @Param        request body models.UserCreateRequest true "User registration data"
+// @Success      201 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      409 {object} models.ErrorResponse
+// @Router       /auth/register [post]
 func (ac *AuthController) Register(c *gin.Context) {
 	var req models.UserCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -95,10 +115,14 @@ func (ac *AuthController) Register(c *gin.Context) {
 }
 
 // Logout handles POST /auth/logout
+// @Summary      User Logout
+// @Description  Logout user (client-side token removal)
+// @Tags         Authentication
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} models.MessageResponse
+// @Router       /auth/logout [post]
 func (ac *AuthController) Logout(c *gin.Context) {
-	// In a JWT-based system, logout is typically handled on the client side
-	// by removing the token from storage. However, you could implement
-	// token blacklisting here if needed.
 	c.JSON(http.StatusOK, models.MessageResponse{
 		Message: "Logout successful",
 	})

@@ -12,8 +12,30 @@ import (
 	"golang-starter-kit/internal/routes"
 	"golang-starter-kit/internal/service"
 
+	_ "golang-starter-kit/docs" // This is required for swag to find your docs
+
 	"github.com/gin-gonic/gin"
 )
+
+// @title           Golang Starter Kit API
+// @version         1.0
+// @description     A starter kit for building REST APIs with Golang, Gin, and GORM
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func usage() {
 	fmt.Println("Usage:")

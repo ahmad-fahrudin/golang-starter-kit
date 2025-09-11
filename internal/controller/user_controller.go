@@ -27,6 +27,16 @@ func NewUserController(userService service.UserService) *UserController {
 }
 
 // CreateUser handles POST /users
+// @Summary      Create User
+// @Description  Create a new user
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        request body models.UserCreateRequest true "User data"
+// @Success      201 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      409 {object} models.ErrorResponse
+// @Router       /users [post]
 func (uc *UserController) CreateUser(c *gin.Context) {
 	var req models.UserCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -62,6 +72,16 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 }
 
 // GetUser handles GET /users/:id
+// @Summary      Get User by ID
+// @Description  Retrieve a user by their ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "User ID"
+// @Success      200 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Router       /users/{id} [get]
 func (uc *UserController) GetUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := utils.StringToUint(idParam)
@@ -88,6 +108,17 @@ func (uc *UserController) GetUser(c *gin.Context) {
 }
 
 // UpdateUser handles PUT /users/:id
+// @Summary      Update User
+// @Description  Update an existing user by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "User ID"
+// @Param        request body models.UserUpdateRequest true "User update data"
+// @Success      200 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Router       /users/{id} [put]
 func (uc *UserController) UpdateUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := utils.StringToUint(idParam)
@@ -133,6 +164,16 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser handles DELETE /users/:id
+// @Summary      Delete User
+// @Description  Delete a user by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "User ID"
+// @Success      200 {object} models.MessageResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Router       /users/{id} [delete]
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := utils.StringToUint(idParam)
@@ -158,6 +199,16 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 }
 
 // GetUsers handles GET /users
+// @Summary      Get All Users
+// @Description  Retrieve a paginated list of users
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        page query int false "Page number" default(1)
+// @Param        limit query int false "Items per page" default(10)
+// @Success      200 {object} models.UsersListResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /users [get]
 func (uc *UserController) GetUsers(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -184,6 +235,16 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 }
 
 // GetProfile handles GET /profile (protected route)
+// @Summary      Get User Profile
+// @Description  Get the authenticated user's profile
+// @Tags         Profile
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.UserResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Router       /profile [get]
 func (uc *UserController) GetProfile(c *gin.Context) {
 	userID, exists := utils.GetUserIDFromContext(c)
 	if !exists {
@@ -209,6 +270,18 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 }
 
 // UpdateProfile handles PUT /profile (protected route)
+// @Summary      Update User Profile
+// @Description  Update the authenticated user's profile
+// @Tags         Profile
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.UserUpdateRequest true "Profile update data"
+// @Success      200 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Router       /profile [put]
 func (uc *UserController) UpdateProfile(c *gin.Context) {
 	userID, exists := utils.GetUserIDFromContext(c)
 	if !exists {
