@@ -6,7 +6,7 @@ import (
 	"golang-starter-kit/config"
 	migr "golang-starter-kit/database/migrations"
 	"golang-starter-kit/database/seeders"
-	"golang-starter-kit/pkg/utils"
+	"golang-starter-kit/utils"
 
 	"gorm.io/gorm"
 )

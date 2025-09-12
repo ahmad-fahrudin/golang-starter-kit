@@ -5,7 +5,7 @@ import (
 
 	"golang-starter-kit/internal/models"
 	"golang-starter-kit/internal/service"
-	"golang-starter-kit/pkg/utils"
+	"golang-starter-kit/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -39,19 +39,13 @@ func (uc *UserController) GetUsersWithPagination(c *gin.Context) {
 
 	// Bind JSON body
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_request",
-			Message: err.Error(),
-		})
+		utils.InvalidRequest(c, err)
 		return
 	}
 
 	// Validate request
 	if err := uc.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
@@ -65,14 +59,11 @@ func (uc *UserController) GetUsersWithPagination(c *gin.Context) {
 
 	response, err := uc.userService.GetAllUsersWithFilter(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			Error:   "search_failed",
-			Message: err.Error(),
-		})
+		utils.InternalServerError(c, "search_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, response)
+	utils.Success(c, response)
 }
 
 // CreateUser handles POST /users
@@ -87,35 +78,23 @@ func (uc *UserController) GetUsersWithPagination(c *gin.Context) {
 func (uc *UserController) CreateUser(c *gin.Context) {
 	var req models.UserCreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_request",
-			Message: err.Error(),
-		})
+		utils.InvalidRequest(c, err)
 		return
 	}
 
 	// Validate request
 	if err := uc.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
 	user, err := uc.userService.CreateUser(req)
 	if err != nil {
-		c.JSON(http.StatusConflict, models.ErrorResponse{
-			Error:   "creation_failed",
-			Message: err.Error(),
-		})
+		utils.Conflict(c, "creation_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "User created successfully",
-		"data":    user,
-	})
+	utils.Created(c, "User created successfully", user)
 }
 
 // GetUser handles GET /users/:id
@@ -131,25 +110,17 @@ func (uc *UserController) GetUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := utils.StringToUint(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_id",
-			Message: "Invalid user ID",
-		})
+		utils.BadRequest(c, "invalid_id", "Invalid user ID")
 		return
 	}
 
 	user, err := uc.userService.GetUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error:   "user_not_found",
-			Message: err.Error(),
-		})
+		utils.NotFound(c, "user_not_found", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": user,
-	})
+	utils.Success(c, user)
 }
 
 // UpdateUser handles PUT /users/:id
@@ -175,35 +146,23 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 
 	var req models.UserUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_request",
-			Message: err.Error(),
-		})
+		utils.InvalidRequest(c, err)
 		return
 	}
 
 	// Validate request
 	if err := uc.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
 	user, err := uc.userService.UpdateUser(id, req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "update_failed",
-			Message: err.Error(),
-		})
+		utils.BadRequest(c, "update_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User updated successfully",
-		"data":    user,
-	})
+	utils.SuccessMessage(c, "User updated successfully", user)
 }
 
 // DeleteUser handles DELETE /users/:id
@@ -219,24 +178,16 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := utils.StringToUint(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_id",
-			Message: "Invalid user ID",
-		})
+		utils.BadRequest(c, "invalid_id", "Invalid user ID")
 		return
 	}
 
 	if err := uc.userService.DeleteUser(id); err != nil {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error:   "delete_failed",
-			Message: err.Error(),
-		})
+		utils.NotFound(c, "delete_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, models.MessageResponse{
-		Message: "User deleted successfully",
-	})
+	utils.Message(c, http.StatusOK, "User deleted successfully")
 }
 
 // GetProfile handles GET /profile (protected route)
@@ -251,25 +202,17 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 func (uc *UserController) GetProfile(c *gin.Context) {
 	userID, exists := utils.GetUserIDFromContext(c)
 	if !exists {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error:   "unauthorized",
-			Message: "User not authenticated",
-		})
+		utils.Unauthorized(c, "User not authenticated")
 		return
 	}
 
 	user, err := uc.userService.GetUserByID(userID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error:   "user_not_found",
-			Message: err.Error(),
-		})
+		utils.NotFound(c, "user_not_found", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": user,
-	})
+	utils.Success(c, user)
 }
 
 // UpdateProfile handles PUT /profile (protected route)
@@ -285,42 +228,27 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 func (uc *UserController) UpdateProfile(c *gin.Context) {
 	userID, exists := utils.GetUserIDFromContext(c)
 	if !exists {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error:   "unauthorized",
-			Message: "User not authenticated",
-		})
+		utils.Unauthorized(c, "User not authenticated")
 		return
 	}
 
 	var req models.UserUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_request",
-			Message: err.Error(),
-		})
+		utils.InvalidRequest(c, err)
 		return
 	}
 
 	// Validate request
 	if err := uc.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
 	user, err := uc.userService.UpdateUser(userID, req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "update_failed",
-			Message: err.Error(),
-		})
+		utils.BadRequest(c, "update_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Profile updated successfully",
-		"data":    user,
-	})
+	utils.SuccessMessage(c, "Profile updated successfully", user)
 }

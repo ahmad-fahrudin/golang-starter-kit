@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"golang-starter-kit/internal/models"
-	"golang-starter-kit/pkg/utils"
+	"golang-starter-kit/utils"
 
 	"github.com/gin-gonic/gin"
 )

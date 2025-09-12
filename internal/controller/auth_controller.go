@@ -5,6 +5,7 @@ import (
 
 	"golang-starter-kit/internal/models"
 	"golang-starter-kit/internal/service"
+	"golang-starter-kit/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -35,19 +36,13 @@ func NewAuthController(userService service.UserService) *AuthController {
 func (ac *AuthController) Login(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "invalid_request",
-			Message: err.Error(),
-		})
+		utils.InvalidRequest(c, err)
 		return
 	}
 
 	// Validate request
 	if err := ac.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
@@ -86,26 +81,17 @@ func (ac *AuthController) Register(c *gin.Context) {
 
 	// Validate request
 	if err := ac.validator.Struct(req); err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error:   "validation_error",
-			Message: err.Error(),
-		})
+		utils.ValidationError(c, err)
 		return
 	}
 
 	user, err := ac.userService.CreateUser(req)
 	if err != nil {
-		c.JSON(http.StatusConflict, models.ErrorResponse{
-			Error:   "registration_failed",
-			Message: err.Error(),
-		})
+		utils.Conflict(c, "registration_failed", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Registration successful",
-		"data":    user,
-	})
+	utils.Created(c, "Registration successful", user)
 }
 
 // Logout handles POST /auth/logout
@@ -116,7 +102,5 @@ func (ac *AuthController) Register(c *gin.Context) {
 // @Produce      json
 // @Router       /auth/logout [post]
 func (ac *AuthController) Logout(c *gin.Context) {
-	c.JSON(http.StatusOK, models.MessageResponse{
-		Message: "Logout successful",
-	})
+	utils.Message(c, http.StatusOK, "Logout successful")
 }

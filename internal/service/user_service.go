@@ -4,7 +4,7 @@ import (
 	"errors"
 	"golang-starter-kit/internal/models"
 	"golang-starter-kit/internal/repository"
-	"golang-starter-kit/pkg/utils"
+	"golang-starter-kit/utils"
 
 	"gorm.io/gorm"
 )
