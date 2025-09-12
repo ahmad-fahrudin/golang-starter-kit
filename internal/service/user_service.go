@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
-	"golang-starter-kit/src/models"
-	"golang-starter-kit/src/repository"
+	"golang-starter-kit/internal/models"
+	"golang-starter-kit/internal/repository"
 	"golang-starter-kit/utils"
 
 	"gorm.io/gorm"

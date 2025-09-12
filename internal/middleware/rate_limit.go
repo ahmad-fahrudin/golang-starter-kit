@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"golang-starter-kit/src/models"
+	"golang-starter-kit/internal/models"
 
 	"github.com/gin-gonic/gin"
 )

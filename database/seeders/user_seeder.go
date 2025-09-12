@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"golang-starter-kit/src/models"
+	"golang-starter-kit/internal/models"
 	"golang-starter-kit/utils"
 
 	"gorm.io/gorm"

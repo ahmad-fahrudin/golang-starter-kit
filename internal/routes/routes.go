@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"golang-starter-kit/src/controller"
-	"golang-starter-kit/src/middleware"
+	"golang-starter-kit/internal/controller"
+	"golang-starter-kit/internal/middleware"
 	"time"
 
 	"github.com/gin-gonic/gin"
