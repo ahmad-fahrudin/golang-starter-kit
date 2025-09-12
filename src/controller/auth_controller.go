@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"golang-starter-kit/internal/models"
-	"golang-starter-kit/internal/service"
+	"golang-starter-kit/src/models"
+	"golang-starter-kit/src/service"
 	"golang-starter-kit/utils"
 
 	"github.com/gin-gonic/gin"

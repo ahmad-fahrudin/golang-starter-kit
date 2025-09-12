@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"golang-starter-kit/internal/models"
+	"golang-starter-kit/src/models"
 
 	"gorm.io/gorm"
 )

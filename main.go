@@ -7,10 +7,10 @@ import (
 
 	"golang-starter-kit/config"
 	dbpkg "golang-starter-kit/database"
-	"golang-starter-kit/internal/controller"
-	"golang-starter-kit/internal/repository"
-	"golang-starter-kit/internal/routes"
-	"golang-starter-kit/internal/service"
+	"golang-starter-kit/src/controller"
+	"golang-starter-kit/src/repository"
+	"golang-starter-kit/src/routes"
+	"golang-starter-kit/src/service"
 
 	_ "golang-starter-kit/docs" // This is required for swag to find your docs
 

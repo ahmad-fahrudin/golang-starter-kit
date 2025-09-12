@@ -3,7 +3,7 @@ package utils
 import (
 	"net/http"
 
-	"golang-starter-kit/internal/models"
+	"golang-starter-kit/src/models"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"golang-starter-kit/internal/models"
+	"golang-starter-kit/src/models"
 	"golang-starter-kit/utils"
 
 	"github.com/gin-gonic/gin"
